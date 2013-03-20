@@ -18,7 +18,7 @@ videos/%.mov : code/%.py videos
 	mkdir -p frames/$(FILENAME)
 	cp $< frames/$(FILENAME)
 	cd frames/$(FILENAME) && python $(NAME)
-	ffmpeg -f image2 -r 60 -i $(addsuffix /frame%04d.png,frames/$(FILENAME)) -pix_fmt yuv420p $@
+	ffmpeg -y -f image2 -r 60 -i $(addsuffix /frame%04d.png,frames/$(FILENAME)) -pix_fmt yuv420p $@
 
 presentation.key : presentation_template.key $(VIDEOS)
 	cp presentation_template.key presentation.key
