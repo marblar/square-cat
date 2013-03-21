@@ -17,7 +17,7 @@ videos/%.mov : code/%.py videos
 	rm -rf frames/$(FILENAME)
 	mkdir -p frames/$(FILENAME)
 	cp $< frames/$(FILENAME)
-	cd frames/$(FILENAME) && python $(NAME)
+	cd frames/$(FILENAME) && env SDL_VIDEODRIVER=dummy python $(NAME)
 	ffmpeg -y -f image2 -r 60 -i $(addsuffix /frame%04d.png,frames/$(FILENAME)) -pix_fmt yuv420p $@
 
 presentation.key : presentation_template.key $(VIDEOS)
