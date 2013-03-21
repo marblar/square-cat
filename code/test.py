@@ -4,16 +4,17 @@ import pygame
 from pygame.locals import *
 import ode
 
+pygame.init()
+
+WIDTH=1024
+HEIGHT=768
+CENTER_X=400
+CENTER_Y=500
+srf = pygame.display.set_mode((WIDTH,HEIGHT))
 
 def coord(x,y):
     "Convert world coordinates to pixel coordinates."
-    return int(round(320+170*x)), int(round(400-170*y))
-
-# Initialize pygame
-pygame.init()
-
-# Open a display
-srf = pygame.display.set_mode((640,480))
+    return int(round(WIDTH/2+(WIDTH/5)*x)), int(round(3*HEIGHT/4-(WIDTH/5)*y))
 
 # Create a world object
 world = ode.World()
@@ -46,10 +47,9 @@ j2.setAnchor( (1,2,0) )
 fps = 60
 dt = 1.0/fps
 loopFlag = True
-clk = pygame.time.Clock()
 
 framecount = 0
-while loopFlag:
+while loopFlag and framecount*dt < 10:
     events = pygame.event.get()
     for e in events:
         if e.type==QUIT:
@@ -78,4 +78,4 @@ while loopFlag:
     world.step(dt)
 
     # Try to keep the specified framerate    
-    clk.tick(fps)
+#    clk.tick(fps)

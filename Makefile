@@ -18,16 +18,19 @@ videos/%.mov : code/%.py videos
 	mkdir -p frames/$(FILENAME)
 	cp $< frames/$(FILENAME)
 	cd frames/$(FILENAME) && env SDL_VIDEODRIVER=dummy python $(NAME)
-	ffmpeg -y -f image2 -r 60 -i $(addsuffix /frame%04d.png,frames/$(FILENAME)) -pix_fmt yuv420p $@
+	ffmpeg -y -f image2 -r 60 -i $(addsuffix /frame%04d.png,frames/$(FILENAME)) -vcodec qtrle -pix_fmt rgb24 $@
 
-presentation.key : presentation_template.key $(VIDEOS)
-	cp presentation_template.key presentation.key
-	cd videos && zip ../presentation.key *$(VIDEO_SUFFIX)
+presentation.key : presentation_template.key $(VIDEOS) modify_apxl.py
+	unzip -o presentation_template.key -d contents
+	python modify_apxl.py
+	cp videos/* contents/ 
+	cd contents && zip ../presentation.key *
 
 $(VIDEO_NAMES) : $(VIDEOS)
 	open videos/$@$(VIDEO_SUFFIX)
 
 clean :
+	rm -rf contents
 	rm -rf frames
 	rm -rf videos
 	rm -f presentation.key
