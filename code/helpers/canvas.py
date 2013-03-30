@@ -1,0 +1,116 @@
+import pygame
+import ode
+from pygame.locals import *
+from colors import *
+import itertools
+import inspect
+import os
+
+WIDTH=1024
+HEIGHT=768
+CENTER_X=400
+CENTER_Y=500
+fps=60
+dt=1.0/fps
+
+class System(object):
+    def __init__(self,DelegateClass):
+        pygame.init()
+        self.world = ode.World()
+        self.canvas = Canvas()
+        self.delegate = DelegateClass(self.world)
+        self.framecount = 0
+
+    def step(self):
+        self.delegate.prepareWorld(self.world,self.framecount)
+        self.world.step(dt)
+        self.delegate.draw(self.canvas)
+        pygame.display.flip()
+        pygame.image.save(self.canvas,"frame%04d.png" % self.framecount)
+        self.framecount = self.framecount + 1
+        return self.framecount
+
+    def makeVideo(self,duration):
+        frames = int(duration*fps)
+        name = os.path.basename(__file__)
+
+        def log(step):
+            print "%s: Writing frame %s of %s" % (name,step,frames)
+
+        try:
+            map(lambda x: log(self.step()),range(0,frames))
+        except StopIteration:
+            return True
+
+class PhysicsDelegate(object):
+    def __init__(self,world):
+        self.world = world
+        self.initializeWorld()
+          
+    def initializeWorld(self):
+        raise NotImplementedError("PhysicsDelegate must implement prepareWorld")
+
+    def prepareWorld(self,world,nframe):
+        raise NotImplementedError("PhysicsDelegate must implement prepareworld")
+
+    def draw(self,canvas):
+        raise NotImplementedError("DrawingDelegate must implement draw")
+
+    def createSphericalBodyWithMass(self,x,y):
+        world = self.world
+        M = ode.Mass()
+        M.setSphere(2500,0.05)
+        body = ode.Body(world)
+        body.setMass(M)
+        return body
+
+    def createSphericalBodiesWithMassesAtPositions(self,masses,positions):
+        def create(params):
+            (mass,position) = params
+            body = self.createSphericalBodyWithMass(*mass)
+            body.setPosition(position)
+            return body
+
+        return map(create,itertools.izip(masses,positions))
+
+    def ballJointOnBodyWithAnchor(self,body,anchor):
+        joint = ode.BallJoint(self.world)
+        joint.attach(body,ode.environment)
+        joint.setAnchor(anchor)
+        return joint
+        
+    def ballJointOnBodies(self,body1,body2):
+        joint = ode.BallJoint(self.world)
+        joint.attach(body1,body2)
+        return joint
+
+    def drawSphere(self,body,canvas):
+        pygame.draw.circle(canvas,DarkGreen,coord(*body.getPosition()),20,0)
+        pygame.draw.circle(canvas,LightGreen,coord(*body.getPosition()),17,0)
+        
+    def drawJoint(self,joint,canvas):
+        pos1 = joint.getBody(0).getPosition() if joint.getBody(0) else joint.getAnchor()
+        pos2 = joint.getBody(1).getPosition() if joint.getBody(1) else joint.getAnchor2()
+        coord1 = coord(*pos1)
+        coord2 = coord(*pos2)
+        pygame.draw.line(canvas,DarkPink,coord1,coord2,4)
+
+    def drawJoints(self,items,canvas):
+        def draw(item):
+            self.drawJoint(item,canvas)
+        map(draw,items)
+    
+    def drawSpheres(self,items,canvas):
+        def draw(item):
+            self.drawSphere(item,canvas)
+        map(draw,items)
+
+def Canvas():
+    return pygame.display.set_mode((WIDTH,HEIGHT))
+
+def coord(x,y,z):
+    if z:
+        raise Exception()
+    "Convert world coordinates to pixel coordinates."
+    return int(round(WIDTH/2+(WIDTH/5)*x)), int(round(3*HEIGHT/4-(WIDTH/5)*y))
+

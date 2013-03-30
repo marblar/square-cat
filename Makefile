@@ -11,7 +11,7 @@ all : $(VIDEOS)
 videos : 
 	mkdir -p videos
 
-videos/%.mov : code/%.py videos
+videos/%.mov : code/%.py videos code/helpers/*
 	$(eval NAME=$(notdir $<))
 	$(eval FILENAME=$(basename $(NAME) .py))
 	rm -rf frames/$(FILENAME)
@@ -25,7 +25,5 @@ $(VIDEO_NAMES) : $(VIDEOS)
 clean :
 	rm -rf frames
 	rm -rf videos
-
-all : presentation.key
 
 .PHONY = all clean
