@@ -5,6 +5,7 @@ from colors import *
 import itertools
 import inspect
 import os
+import __main__
 
 WIDTH=1024
 HEIGHT=768
@@ -32,7 +33,7 @@ class System(object):
 
     def makeVideo(self,duration):
         frames = int(duration*fps)
-        name = os.path.basename(__file__)
+        name = os.path.basename(__main__.__file__)
 
         def log(step):
             print "%s: Writing frame %s of %s" % (name,step,frames)
