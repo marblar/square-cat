@@ -26,4 +26,4 @@ class DoublePendulumDelegate(SphereJointPhysicsDelegate):
 
 if __name__ == "__main__":
     system = System(DoublePendulumDelegate)
-    system.makeVideo(10)
+    system.makeVideo(1)
