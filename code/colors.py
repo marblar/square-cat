@@ -1,0 +1,8 @@
+DarkBlue=(62,100,120)
+LightBlue=(105,168,194)
+LightPink=(232,97,135)
+DarkPink=(148,61,90)
+LightGreen=(146,179,87)
+DarkGreen=(107,132,49)
+Black=(55,54,55)
+White=(237,237,237)
