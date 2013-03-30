@@ -7,6 +7,7 @@ import inspect
 import os
 import __main__
 
+
 WIDTH=1024
 HEIGHT=768
 CENTER_X=400
@@ -60,29 +61,24 @@ class PhysicsDelegate(object):
     def createSphericalBodyWithMass(self,x,y):
         world = self.world
         M = ode.Mass()
-        M.setSphere(2500,0.05)
+        M.setSphere(x,y)
         body = ode.Body(world)
         body.setMass(M)
         return body
 
-    def createSphericalBodiesWithMassesAtPositions(self,masses,positions):
+    def createSphericalBodies(self,positions,masses=itertools.repeat((2500,0.05))):
         def create(params):
             (mass,position) = params
             body = self.createSphericalBodyWithMass(*mass)
             body.setPosition(position)
             return body
-
         return map(create,itertools.izip(masses,positions))
-
-    def ballJointOnBodyWithAnchor(self,body,anchor):
-        joint = ode.BallJoint(self.world)
-        joint.attach(body,ode.environment)
-        joint.setAnchor(anchor)
-        return joint
         
-    def ballJointOnBodies(self,body1,body2):
+    def ballJoint(self,body1,body2=ode.environment,anchor=None):
         joint = ode.BallJoint(self.world)
         joint.attach(body1,body2)
+        if body2 == ode.environment and not anchor:
+            raise Exception("You must provide an anchor point for environment-anchored spheres.")
         return joint
 
     def drawSphere(self,body,canvas):
@@ -105,6 +101,12 @@ class PhysicsDelegate(object):
         def draw(item):
             self.drawSphere(item,canvas)
         map(draw,items)
+
+class SphereJointPhysicsDelegate(PhysicsDelegate):
+    def draw(self,canvas):
+        canvas.fill(LightBlue)
+        self.drawJoints(self.joints,canvas)
+        self.drawSpheres(self.spheres,canvas)
 
 def Canvas():
     return pygame.display.set_mode((WIDTH,HEIGHT))
