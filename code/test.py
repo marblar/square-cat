@@ -1,7 +1,7 @@
 # pyODE example 2: Connecting bodies with joints
 import pygame
 import ode
-from helpers.canvas import System, SphereJointPhysicsDelegate, coord
+from helpers.delegate import System, SphereJointPhysicsDelegate, coord
 import itertools
 from helpers.colors import *
 
