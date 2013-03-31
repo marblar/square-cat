@@ -1,5 +1,5 @@
 ### Videos go here ###
-VIDEO_NAMES = cat test
+VIDEO_NAMES = cat wind push
 VIDEO_SUFFIX = .mov
 
 # Everything else can remain untouched:

@@ -2,6 +2,7 @@ from delegate import SphereJointPhysicsDelegate,angle,difference
 import itertools
 import collections
 import ode
+from cat_actions import *
 
 def shift(x,n=1):
     dq = collections.deque(x)
@@ -19,8 +20,8 @@ class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
         self.joints = [self.prJoint(*x) for x in joint_pairs] 
         self.motors = self.joints[::2]
         for joint in self.joints:
-            joint.setParam(ode.ParamFMax,1)
-            joint.setParam(ode.ParamFMax2,1)
+            joint.setParam(ode.ParamFMax,9)
+            joint.setParam(ode.ParamFMax2,9)
             joint.setParam(ode.ParamHiStop2,3.14/2-.1)
             joint.setParam(ode.ParamHiStop,2)
             joint.setParam(ode.ParamLoStop,0)
@@ -31,8 +32,8 @@ class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
         for joint in self.joints:
             joint.setParam(ode.ParamVel,0)
             joint.setParam(ode.ParamVel2,0)
-            joint.setParam(ode.ParamFMax2,1)
-            joint.setParam(ode.ParamFMax,3)
+            joint.setParam(ode.ParamFMax2,9)
+            joint.setParam(ode.ParamFMax,9)
 
     def startWind(self):
         self.reset()
@@ -103,12 +104,6 @@ class ProgrammableCat(SquareCatPhysicsDelegate):
 
         def getInstructions(self):
             raise Exception()
-
-push = 0
-wind = 1
-pull = 2
-unwind = 3
-stop = 4
 
 def makeCycles(phaseLength=40,count=1):
     cycles = []
