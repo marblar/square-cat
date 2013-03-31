@@ -13,7 +13,7 @@ def shift(x,n=1):
 
 class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
     def initializeWorld(self):
-        headColor = {border:DarkBlue,fill:LightGreen}
+        headColor = {border:DarkGreen,fill:LightGreen}
         self.colors = list(chain(repeat(defaultColor,2),
                             repeat(headColor,1),
                             repeat(defaultColor,1)
