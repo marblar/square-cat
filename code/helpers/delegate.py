@@ -120,7 +120,7 @@ class PhysicsDelegate(object):
         pos2 = joint.getBody(1).getPosition() if joint.getBody(1) else joint.getAnchor2()
         coord1 = coord(*pos1)
         coord2 = coord(*pos2)
-        pygame.draw.line(canvas,DarkGreen,coord1,coord2,4)
+        pygame.draw.line(canvas,DarkGreen,coord1,coord2,3)
 
     def drawJoints(self,items,canvas):
         def draw(item):
