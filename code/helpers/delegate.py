@@ -10,8 +10,8 @@ import __main__
 
 WIDTH=1024
 HEIGHT=768
-CENTER_X=400
-CENTER_Y=500
+CENTER_X=300
+CENTER_Y=200
 fps=60
 dt=1.0/fps
 
@@ -28,7 +28,7 @@ class System(object):
         self.world.step(dt)
         self.delegate.draw(self.canvas)
         pygame.display.flip()
-        pygame.image.save(self.canvas,"frame%04d.png" % self.framecount)
+        pygame.image.save(self.canvas,"frame%04d.bmp" % self.framecount)
         self.framecount = self.framecount + 1
         return self.framecount
 
@@ -160,7 +160,7 @@ class SphereJointPhysicsDelegate(PhysicsDelegate):
         self.drawSpheres(self.spheres,canvas)
 
 def Canvas():
-    return pygame.display.set_mode((WIDTH,HEIGHT))
+    return pygame.display.set_mode((WIDTH,HEIGHT),pygame.HWSURFACE|pygame.DOUBLEBUF)
 
 def coord(x,y,z):
     if z:
