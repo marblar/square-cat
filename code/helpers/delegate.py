@@ -107,7 +107,7 @@ class PhysicsDelegate(object):
         joint.attach(body1,body2)
         return joint
 
-    def drawSphere(self,body,canvas):
+    def drawSphere(self,body,canvas,borderColor=DarkPink,fillColor=LightPink):
         pygame.draw.circle(canvas,DarkPink,coord(*body.getPosition()),20,0)
         pygame.draw.circle(canvas,LightPink,coord(*body.getPosition()),17,0)
         
@@ -123,10 +123,11 @@ class PhysicsDelegate(object):
             self.drawJoint(item,canvas)
         map(draw,items)
     
-    def drawSpheres(self,items,canvas):
-        def draw(item):
-            self.drawSphere(item,canvas)
-        map(draw,items)
+    def drawSpheres(self,items,canvas,colors=itertools.repeat((DarkPink,LightPink))):
+        def draw(pair):
+            (item,color)=pair
+            self.drawSphere(item,canvas,borderColor=color[0],fillColor=color[1])
+        map(draw,zip(items,colors))
     
     def relativeAngle(self,leftPair,rightPair):
         pos1 = relativePosition(leftPair[1],leftPair[0])
