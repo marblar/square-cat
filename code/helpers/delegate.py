@@ -88,6 +88,11 @@ class PhysicsDelegate(object):
             raise Exception("You must provide an anchor point for environment-anchored spheres.")
         return joint
 
+    def rotatorJoint(self,body1,body2):
+        joint = ode.AMotor(self.world)
+        joint.setMode(ode.AMotorEuler)
+        joint.attach(body1,body2)
+        return joint
 
     def drawSphere(self,body,canvas):
         pygame.draw.circle(canvas,DarkGreen,coord(*body.getPosition()),20,0)
