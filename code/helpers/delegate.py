@@ -151,12 +151,26 @@ def dotproduct(v1, v2):
 def length(v):
   return math.sqrt(dotproduct(v, v))
 
-def angle(v1, v2):
+def angle(v1,v2):
   return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2))) if length(v1) and length(v2) else 0
+
+def angle3(v1,center,v2):
+    left = difference(center,v1)
+    right = difference(center,v2)
+    return angle(left,right)
 
 def difference(v1,v2):
     return tuple([x-y for x,y in zip(v1,v2)])
 
+def jointVectors(joint):
+    return (joint.getBody(0).getPosition(),joint.getBody(1).getPosition())
+    
+def jointDistance(joint):
+    return length(difference(*jointVectors(joint)))
+    
+def jointAngle(joint):
+    return angle(*jointVectors(joint))
+    
 class SphereJointPhysicsDelegate(PhysicsDelegate):
     def draw(self,canvas):
         canvas.fill(LightBlue)

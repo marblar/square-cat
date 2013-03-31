@@ -4,3 +4,4 @@ pull = 2
 unwind = 3
 stop = 4
 end = stop
+square = 5
