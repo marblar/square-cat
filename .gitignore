@@ -1,3 +1,4 @@
 frames
 videos
 *.pyc
+.DS_STORE
