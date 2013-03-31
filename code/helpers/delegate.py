@@ -7,6 +7,10 @@ import inspect
 import os
 import __main__
 
+border='borderColor'
+fill='fillColor'
+defaultColor={border : DarkPink,
+              fill : LightPink}
 
 WIDTH=1024
 HEIGHT=768
@@ -108,8 +112,8 @@ class PhysicsDelegate(object):
         return joint
 
     def drawSphere(self,body,canvas,borderColor=DarkPink,fillColor=LightPink):
-        pygame.draw.circle(canvas,DarkPink,coord(*body.getPosition()),20,0)
-        pygame.draw.circle(canvas,LightPink,coord(*body.getPosition()),17,0)
+        pygame.draw.circle(canvas,borderColor,coord(*body.getPosition()),20,0)
+        pygame.draw.circle(canvas,fillColor,coord(*body.getPosition()),17,0)
         
     def drawJoint(self,joint,canvas):
         pos1 = joint.getBody(0).getPosition() if joint.getBody(0) else joint.getAnchor()
@@ -123,10 +127,10 @@ class PhysicsDelegate(object):
             self.drawJoint(item,canvas)
         map(draw,items)
     
-    def drawSpheres(self,items,canvas,colors=itertools.repeat((DarkPink,LightPink))):
+    def drawSpheres(self,items,canvas,colors=itertools.repeat(defaultColor)):
         def draw(pair):
             (item,color)=pair
-            self.drawSphere(item,canvas,borderColor=color[0],fillColor=color[1])
+            self.drawSphere(item,canvas,**color)
         map(draw,zip(items,colors))
     
     def relativeAngle(self,leftPair,rightPair):
@@ -157,7 +161,10 @@ class SphereJointPhysicsDelegate(PhysicsDelegate):
     def draw(self,canvas):
         canvas.fill(LightBlue)
         self.drawJoints(self.joints,canvas)
-        self.drawSpheres(self.spheres,canvas)
+        try:
+            self.drawSpheres(self.spheres,canvas,colors=self.colors)
+        except AttributeError:
+            self.drawSpheres(self.spheres,canvas)
 
 def Canvas():
     return pygame.display.set_mode((WIDTH,HEIGHT),pygame.HWSURFACE|pygame.DOUBLEBUF)
@@ -167,4 +174,3 @@ def coord(x,y,z):
         raise Exception()
     "Convert world coordinates to pixel coordinates."
     return int(round(WIDTH/2+(WIDTH/5)*x)), int(round(3*HEIGHT/4-(WIDTH/5)*y))
-

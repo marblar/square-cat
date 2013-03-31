@@ -1,8 +1,9 @@
-from delegate import SphereJointPhysicsDelegate,angle,difference
-import itertools
+from delegate import SphereJointPhysicsDelegate,angle,difference,border,fill,defaultColor
+from itertools import chain, repeat
 import collections
 import ode
 from cat_actions import *
+from colors import *
 
 def shift(x,n=1):
     dq = collections.deque(x)
@@ -11,8 +12,14 @@ def shift(x,n=1):
 
 class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
     def initializeWorld(self):
+        headColor = {border:DarkBlue,fill:LightGreen}
+        self.colors = list(chain(repeat(defaultColor,2),
+                            repeat(headColor,1),
+                            repeat(defaultColor,1)
+                            ))
+
         self.world.setGravity((0,0,0))
-        mass = itertools.repeat((2500,0.05))
+        mass = repeat((2500,0.05))
         positions = [ (0,0,0), (1,0,0) , (1,1,0), (0,1,0)]
         self.spheres = self.createSphericalBodies(positions)
         joint_pairs = zip(self.spheres,shift(self.spheres))
