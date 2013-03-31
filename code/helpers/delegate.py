@@ -90,6 +90,13 @@ class PhysicsDelegate(object):
             raise Exception("You must provide an anchor point for environment-anchored spheres.")
         return joint
 
+    def prJoint(self,body1,body2):
+        joint = ode.PRJoint(self.world)
+        joint.attach(body1,body2)
+        joint.setAxis2((0,0,1))
+        joint.setAxis1(difference(body1.getPosition(),body2.getPosition()))
+        return joint
+
     def rotatorJoint(self,body1,body2):
         joint = ode.HingeJoint(self.world)
         joint.attach(body1,body2)
@@ -101,15 +108,15 @@ class PhysicsDelegate(object):
         return joint
 
     def drawSphere(self,body,canvas):
-        pygame.draw.circle(canvas,DarkGreen,coord(*body.getPosition()),20,0)
-        pygame.draw.circle(canvas,LightGreen,coord(*body.getPosition()),17,0)
+        pygame.draw.circle(canvas,DarkPink,coord(*body.getPosition()),20,0)
+        pygame.draw.circle(canvas,LightPink,coord(*body.getPosition()),17,0)
         
     def drawJoint(self,joint,canvas):
         pos1 = joint.getBody(0).getPosition() if joint.getBody(0) else joint.getAnchor()
         pos2 = joint.getBody(1).getPosition() if joint.getBody(1) else joint.getAnchor2()
         coord1 = coord(*pos1)
         coord2 = coord(*pos2)
-        pygame.draw.line(canvas,DarkPink,coord1,coord2,4)
+        pygame.draw.line(canvas,DarkGreen,coord1,coord2,4)
 
     def drawJoints(self,items,canvas):
         def draw(item):

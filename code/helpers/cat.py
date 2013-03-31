@@ -16,26 +16,111 @@ class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
         self.spheres = self.createSphericalBodies(positions)
         joint_pairs = zip(self.spheres,shift(self.spheres))
         self.joint_pairs = joint_pairs
-        self.rotator = self.rotatorJoint(*joint_pairs[0])
-        self.joints = [self.ballJoint(*x) for x in joint_pairs] 
+        self.joints = [self.prJoint(*x) for x in joint_pairs] 
+        self.motors = self.joints[::2]
+        for joint in self.joints:
+            joint.setParam(ode.ParamFMax,1)
+            joint.setParam(ode.ParamFMax2,1)
+            joint.setParam(ode.ParamHiStop2,3.14/2-.1)
+            joint.setParam(ode.ParamHiStop,2)
+            joint.setParam(ode.ParamLoStop,0)
 
-        self.motors = [self.motorJoint(*joint_pairs[0])]
-    
-        self.rotator.setAxis((0,0,1))
-        self.rotator.setParam(ode.ParamFMax,100)
-        self.rotator.setParam(ode.ParamVel,-3)
-        self.rotator.setParam(ode.ParamHiStop,3.14/2-.1)
-        self.rotator.setParam(ode.paramLoStop,-3.14/2-.1)
+        self.startUnwind()
 
-    def enableMotors(self):
-        for motor in self.motors:
-            print motor
-            motor.setParam(ode.ParamFMax,100)
-            motor.setParam(ode.ParamVel,-1)
+    def reset(self):
+        for joint in self.joints:
+            joint.setParam(ode.ParamVel,0)
+            joint.setParam(ode.ParamVel2,0)
+            joint.setParam(ode.ParamFMax2,1)
+            joint.setParam(ode.ParamFMax,3)
 
-    def disableMotors(self):
-        for motor in self.motors:
-            motor.setParam(ode.ParamFMax,0)
+    def startWind(self):
+        self.reset()
+        for rotator in self.joints:
+            if rotator in self.motors:
+                rotator.setParam(ode.ParamFMax2,0)
+            else:
+                rotator.setParam(ode.ParamVel2,3)
 
-    def prepareWorld(self,world,nframe):
+    def startUnwind(self):
+        self.reset()
+        for rotator in self.joints:
+            if rotator in self.motors:
+                rotator.setParam(ode.ParamFMax2,0)
+            else:
+                rotator.setParam(ode.ParamVel2,-3)
+
+    def startPush(self):
+        self.reset()
+        for rotator in self.motors:
+            rotator.setParam(ode.ParamVel,-3)
+
+    def startPull(self):
+        self.reset()
+        for rotator in self.motors:
+            rotator.setParam(ode.ParamVel,3)
+
+    def prepareWorld(self,world,nframes):
         pass
+
+
+def endCat():
+    raise StopIteration()
+
+class ProgrammableCat(SquareCatPhysicsDelegate):
+        def initializeWorld(self):
+            SquareCatPhysicsDelegate.initializeWorld(self)
+            self.instructions = self.getInstructions()
+            self.last_transition = 0
+
+        @property
+        def current_instruction(self):
+            return self.instructions[0]
+
+        def popInstruction(self):
+            self.instructions.pop(0)
+
+        def prepareWorld(self,world,nframes):
+            switch = {
+                0 : lambda: self.startPush(),
+                1 : lambda: self.startWind(),
+                2 : lambda: self.startPull(),
+                3 : lambda: self.startUnwind(),
+                4 : lambda: endCat()
+            }
+            (duration,action) = self.current_instruction
+            
+            if nframes == 1:
+                switch[action]()
+                self.popInstruction()
+                return 
+
+            if nframes - self.last_transition >= duration:
+                switch[action]()
+                self.popInstruction()
+                self.last_transition = nframes
+                print action, "#################################"
+
+        def getInstructions(self):
+            raise Exception()
+
+push = 0
+wind = 1
+pull = 2
+unwind = 3
+stop = 4
+
+def makeCycles(phaseLength=40,count=1):
+    cycles = []
+    time = 0
+    for k in range(count):
+        cycles = cycles + [
+            (phaseLength,push),
+            (phaseLength,wind),
+            (phaseLength,pull),
+            (phaseLength,unwind)
+        ]
+        time = time + phaseLength*5
+    cycles = cycles + [(phaseLength,stop)]
+    print cycles
+    return cycles
