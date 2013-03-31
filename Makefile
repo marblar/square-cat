@@ -16,7 +16,7 @@ videos/%.mov : code/%.py videos code/helpers/*
 	$(eval FILENAME=$(basename $(NAME) .py))
 	rm -rf frames/$(FILENAME)
 	mkdir -p frames/$(FILENAME)
-	cd frames/$(FILENAME) && env SDL_VIDEODRIVER=dummy python -m pdb $(abspath $<)
+	cd frames/$(FILENAME) && env SDL_VIDEODRIVER=dummy python $(abspath $<)
 	ffmpeg -y -f image2 -r 60 -i $(addsuffix /frame%04d.png,frames/$(FILENAME)) -vcodec qtrle -pix_fmt rgb24 $@
 
 $(VIDEO_NAMES) : $(VIDEOS)

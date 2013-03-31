@@ -84,13 +84,19 @@ class PhysicsDelegate(object):
     def motorJoint(self,body1,body2=ode.environment,anchor=None):
         joint = ode.LMotor(self.world)
         joint.attach(body1,body2)
+        joint.setNumAxes(1)
+        joint.setAxis(0,1,(0,1,0))
         if body2 == ode.environment and not anchor:
             raise Exception("You must provide an anchor point for environment-anchored spheres.")
         return joint
 
     def rotatorJoint(self,body1,body2):
-        joint = ode.AMotor(self.world)
-        joint.setMode(ode.AMotorEuler)
+        joint = ode.HingeJoint(self.world)
+        joint.attach(body1,body2)
+        return joint
+
+    def slideJoint(self,body1,body2):
+        joint = ode.PistonJoint(self.world)
         joint.attach(body1,body2)
         return joint
 
@@ -114,6 +120,30 @@ class PhysicsDelegate(object):
         def draw(item):
             self.drawSphere(item,canvas)
         map(draw,items)
+    
+    def relativeAngle(self,leftPair,rightPair):
+        pos1 = relativePosition(leftPair[1],leftPair[0])
+        pos2 = relativePosition(rightPair[0],rightPair[1])
+
+        return angle(pos1,pos2)
+
+import math
+
+def relativePosition(left,right):
+    positions = [x.getPosition() for x in [left,right]]
+    return tuple([(x-y) for x,y in zip(*positions)])
+
+def dotproduct(v1, v2):
+  return sum((a*b) for a, b in zip(v1, v2))
+
+def length(v):
+  return math.sqrt(dotproduct(v, v))
+
+def angle(v1, v2):
+  return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2))) if length(v1) and length(v2) else 0
+
+def difference(v1,v2):
+    return tuple([x-y for x,y in zip(v1,v2)])
 
 class SphereJointPhysicsDelegate(PhysicsDelegate):
     def draw(self,canvas):
