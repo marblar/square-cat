@@ -46,6 +46,14 @@ class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
         print angles
         return angles
 
+    @property
+    def windVelocity(self):
+        return 3
+
+    @property
+    def pushVelocity(self):
+        return 3
+
     def reset(self):
         self.servoMode = False
         for joint in self.joints:
@@ -60,7 +68,7 @@ class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
             if rotator in self.motors:
                 rotator.setParam(ode.ParamFMax2,0)
             else:
-                rotator.setParam(ode.ParamVel2,3)
+                rotator.setParam(ode.ParamVel2,self.windVelocity)
 
     def startUnwind(self):
         self.reset()
@@ -68,17 +76,17 @@ class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
             if rotator in self.motors:
                 rotator.setParam(ode.ParamFMax2,0)
             else:
-                rotator.setParam(ode.ParamVel2,-3)
+                rotator.setParam(ode.ParamVel2,-self.windVelocity)
 
     def startPush(self):
         self.reset()
         for rotator in self.motors:
-            rotator.setParam(ode.ParamVel,-3)
+            rotator.setParam(ode.ParamVel,-self.pushVelocity)
 
     def startPull(self):
         self.reset()
         for rotator in self.motors:
-            rotator.setParam(ode.ParamVel,3)
+            rotator.setParam(ode.ParamVel,self.pushVelocity)
     
     def startSquare(self):
         self.reset()
