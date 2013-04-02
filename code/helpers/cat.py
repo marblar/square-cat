@@ -54,13 +54,17 @@ class SquareCatPhysicsDelegate(SphereJointPhysicsDelegate):
     def pushVelocity(self):
         return 3
 
+    @property
+    def maxForce(self):
+        return 9
+
     def reset(self):
         self.servoMode = False
         for joint in self.joints:
             joint.setParam(ode.ParamVel,0)
             joint.setParam(ode.ParamVel2,0)
-            joint.setParam(ode.ParamFMax2,9)
-            joint.setParam(ode.ParamFMax,9)
+            joint.setParam(ode.ParamFMax2,self.maxForce)
+            joint.setParam(ode.ParamFMax,self.maxForce)
 
     def startWind(self):
         self.reset()
